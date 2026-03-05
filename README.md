@@ -46,6 +46,20 @@ python3 -m http.server 8000
 
 Opne `http://localhost:8000/`.
 
+## Passord på sida
+
+Sida har no ein klient-side passordportal i `skript/app.js`.
+
+1. Lag SHA-256-hash av passordet ditt:
+
+```bash
+printf 'ditt-passord-her' | shasum -a 256
+```
+
+2. Byt verdien i `ACCESS_PASSWORD_HASH` i `skript/app.js`.
+
+Merk: Dette skjuler innhaldet for vanlege brukarar, men er ikkje full server-side tryggleik.
+
 ## Tiptap-editor for nye songar
 
 Opne `tiptap-editor.html` for å lage nytt innhald.

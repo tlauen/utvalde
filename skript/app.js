@@ -1,5 +1,76 @@
 (function () {
   var KEY = "songhefte_theme";
+  var ACCESS_KEY = "songhefte_access_v1";
+  var ACCESS_PASSWORD_HASH = "1ffa20f244683c96798d050cb32b8e5bddd8d5efbfdb591cb6c31242023975d0"; // "allsongtilfolket"
+
+  function sha256Hex(text) {
+    if (!window.crypto || !window.crypto.subtle || !window.TextEncoder) {
+      return Promise.resolve("");
+    }
+    var bytes = new TextEncoder().encode(text);
+    return window.crypto.subtle.digest("SHA-256", bytes).then(function (buf) {
+      var arr = Array.from(new Uint8Array(buf));
+      return arr.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    });
+  }
+
+  function initAccessGate() {
+    var expected = (ACCESS_PASSWORD_HASH || "").trim().toLowerCase();
+    if (!expected) return Promise.resolve();
+
+    var saved = "";
+    try { saved = (localStorage.getItem(ACCESS_KEY) || "").trim().toLowerCase(); } catch (e) {}
+    if (saved === expected) return Promise.resolve();
+
+    document.body.setAttribute("data-locked", "true");
+
+    return new Promise(function (resolve) {
+      var gate = document.createElement("section");
+      gate.className = "access-gate";
+      gate.innerHTML =
+        '<div class="access-gate__card">' +
+          '<h1 class="access-gate__title">Torbjørns utvalde songar</h1>' +
+          '<p class="access-gate__text">Skriv inn passord for å opne sida.</p>' +
+          '<form class="access-gate__form">' +
+            '<label class="access-gate__label" for="access-password">Passord</label>' +
+            '<input id="access-password" class="access-gate__input" type="password" autocomplete="current-password" required />' +
+            '<button class="access-gate__button" type="submit">Opne</button>' +
+            '<p class="access-gate__error" role="alert" aria-live="polite"></p>' +
+          "</form>" +
+        "</div>";
+      document.body.appendChild(gate);
+
+      var form = gate.querySelector(".access-gate__form");
+      var input = gate.querySelector(".access-gate__input");
+      var error = gate.querySelector(".access-gate__error");
+      var btn = gate.querySelector(".access-gate__button");
+      if (input) input.focus();
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!input) return;
+        var candidate = input.value || "";
+        btn.disabled = true;
+        error.textContent = "";
+
+        sha256Hex(candidate).then(function (hash) {
+          if ((hash || "").toLowerCase() === expected) {
+            try { localStorage.setItem(ACCESS_KEY, expected); } catch (err) {}
+            document.body.removeAttribute("data-locked");
+            gate.remove();
+            resolve();
+            return;
+          }
+          error.textContent = "Feil passord. Prøv igjen.";
+          input.select();
+        }).catch(function () {
+          error.textContent = "Klarte ikkje sjekke passord. Prøv igjen.";
+        }).finally(function () {
+          btn.disabled = false;
+        });
+      });
+    });
+  }
 
   function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
@@ -154,7 +225,9 @@
   }
 
   initTheme();
-  initPrint();
-  initToTop();
-  initSearchAndFilter();
+  initAccessGate().then(function () {
+    initPrint();
+    initToTop();
+    initSearchAndFilter();
+  });
 })();

@@ -213,6 +213,71 @@ a {
 .song-search__empty{ opacity:.85; }
 
 /* =========================================================
+   PASSORDPORTAL
+   ========================================================= */
+body[data-locked] > main,
+body[data-locked] > .to-top,
+body[data-locked] > .dark-toggle{
+  display:none !important;
+}
+
+.access-gate{
+  min-height:calc(100vh - 10rem);
+  display:grid;
+  place-items:center;
+}
+
+.access-gate__card{
+  width:min(440px, 100%);
+  border:1px solid currentColor;
+  border-radius:16px;
+  padding:1.25rem;
+}
+
+.access-gate__title{
+  margin:0 0 .55rem;
+  font-size:clamp(1.5rem, 3.5vw, 2rem);
+  line-height:1.15;
+}
+
+.access-gate__text{
+  margin:0 0 .9rem;
+}
+
+.access-gate__label{
+  display:block;
+  font-weight:600;
+  margin-bottom:.35rem;
+}
+
+.access-gate__input{
+  width:100%;
+  padding:.65rem .75rem;
+  border:1px solid currentColor;
+  border-radius:10px;
+  background:transparent;
+  color:inherit;
+}
+
+.access-gate__button{
+  margin-top:.7rem;
+  padding:.55rem .8rem;
+  border:1px solid currentColor;
+  border-radius:999px;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.access-gate__error{
+  min-height:1.2em;
+  margin:.6rem 0 0;
+  opacity:.9;
+}
+
+/* =========================================================
    MØRK MODUS (papir på nattbord)
    Merk: krev at du set html[data-theme="dark"] via JS/knapp
    ========================================================= */
@@ -235,6 +300,7 @@ html[data-theme="dark"] .song-btn{
 }
 html[data-theme="dark"] .song-credits{ opacity:.92; }
 html[data-theme="dark"] .song-search__input{ border-color: currentColor; }
+html[data-theme="dark"] .access-gate__input{ border-color: currentColor; }
 
 /* Mørk-modus-knapp */
 .dark-toggle{
@@ -469,4 +535,3 @@ strong,
 b{
   font-weight: 700; /* eller 800 om fonten støttar det */
 }
-
