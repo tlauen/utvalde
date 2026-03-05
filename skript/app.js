@@ -1,7 +1,7 @@
 (function () {
   var KEY = "songhefte_theme";
   var ACCESS_KEY = "songhefte_access_v1";
-  var ACCESS_PASSWORD_HASH = "1ffa20f244683c96798d050cb32b8e5bddd8d5efbfdb591cb6c31242023975d0"; // "allsongtilfolket"
+  var ACCESS_PASSWORD_HASH = "20d2c5c599fb17e227d9b2e324aa490ba32f1fad373a8126a83579ca4fca7c36"; // "allsongtilfolket"
 
   function sha256Hex(text) {
     if (!window.crypto || !window.crypto.subtle || !window.TextEncoder) {
