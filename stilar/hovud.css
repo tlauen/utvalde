@@ -1,0 +1,472 @@
+/* Grunnstil inspirert av WordPress Twenty Twenty-Five */
+:root {
+  --wp-content-size: 600px;
+  --wp-wide-size: 680px;
+  --wp-bg: #ffffff;
+  --wp-fg: #1a1a1a;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--wp-fg);
+  background: var(--wp-bg);
+  line-height: 1.55;
+  padding: 5rem 2rem;
+}
+
+.wp-site-blocks {
+  max-width: var(--wp-content-size);
+  margin: 0 auto;
+}
+
+.entry-content h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  margin: 2rem 0;
+  font-weight: 900;
+}
+
+.entry-content h2 {
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  margin-top: 2rem;
+}
+
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: .1em;
+}
+
+:where(.wp-site-blocks *:focus) {
+  outline-width: 2px;
+  outline-style: solid;
+}
+
+.entry-content p, .entry-content li {
+  font-size: 1rem;
+}
+
+.tilbake a {
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.song-lyrics p, .song-lyrics li, .song-lyrics pre {
+  font-size: 1.2rem;
+}
+
+.song-lyrics p {
+  white-space: normal;
+}
+
+.song-btn {
+  padding: .35em .7em;
+}
+
+.song-btn-print {
+  font: inherit;
+}
+
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+
+@media (max-width: 800px) {
+  body { padding: 2rem 1rem 3rem; }
+}
+
+
+/* =========================================================
+   FRAMSIDE
+   ========================================================= */
+.home .wp-site-blocks,
+.front-page .wp-site-blocks{
+  padding-top: 3rem;
+}
+
+/* =========================================================
+   SONG-TOC
+   ========================================================= */
+.song-toc-jump{ margin: 1.5rem 0 2rem; }
+.song-toc-jump ul{
+  display:flex; flex-wrap:wrap;
+  gap:.5rem .75rem;
+  list-style:none;
+  padding:0; margin:0;
+}
+.song-toc-jump a{ font-weight:600; text-decoration:none; color:inherit; }
+.song-toc-jump a:hover{ text-decoration:underline; }
+
+.song-toc-section{ margin:1.5rem 0 2.25rem; }
+.song-toc-section h2{ margin-bottom:.75rem; }
+
+.song-toc-list{ padding-left:1.1rem; margin:0; }
+.song-toc-list li{ margin:.45rem 0; }
+.song-toc-list a{ text-decoration:none; color:inherit; }
+.song-toc-list a:hover{ text-decoration:underline; }
+
+@media (max-width:600px){
+  .song-toc-section h2{ font-size:1.35rem; }
+  .song-toc-list a{ display:inline-block; padding:.15rem 0; }
+}
+
+/* =========================================================
+   SONG-SIDER: META
+   ========================================================= */
+.song-meta{ margin-bottom:1.25rem; }
+
+.song-credits{
+  display:flex; flex-wrap:wrap;
+  gap:.35em .8em;
+  font-size:.6em;
+  line-height:1.2;
+  opacity:.85;
+}
+.song-credit{ white-space:nowrap; }
+
+/* =========================================================
+   SONG-SIDER: KNAPPAR UNDER TEKST
+   ========================================================= */
+.song-actions-bottom{
+  display:flex; flex-wrap:wrap;
+  gap:.4em .5em;
+  margin-top:1.5rem;
+}
+
+.song-btn{
+  display:inline-flex; align-items:center; gap:.4em;
+  font-weight:600;
+  text-decoration:none;
+  border:1px solid currentColor;
+  border-radius:999px;
+  background:transparent;
+  color:inherit;
+}
+.song-btn:hover{ opacity:.85; }
+
+.song-btn-small{ font-size:.65em; padding:.35em .7em; }
+.song-btn i{ font-size:1em; }
+
+.song-actions-bottom button.song-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  cursor:pointer;
+}
+
+/* Print-knappen skal ikkje få “bakgrunn” frå tema */
+.song-btn-print,
+.song-btn-print:hover,
+.song-btn-print:focus,
+.song-btn-print:active{
+  background:transparent !important;
+  background-color:transparent !important;
+  box-shadow:none !important;
+}
+
+@media (max-width:600px){
+  .song-btn-small{ padding:.45em .85em; }
+}
+
+/* =========================================================
+   LIVE-SØK
+   ========================================================= */
+.song-search{ margin: 0 0 1.25rem; }
+
+.song-search__label{
+  display:block;
+  font-weight:600;
+  margin-bottom:.4rem;
+}
+
+.song-search__input{
+  width:100%;
+  padding:.65rem .8rem;
+  border:1px solid currentColor;
+  border-radius:12px;
+  background:transparent;
+  color:inherit;
+}
+
+.song-search__hint{
+  font-size:.6em;         /* same storleik som kreditering */
+  line-height:1.2;
+  opacity:.75;
+  margin-top:.35rem;
+}
+
+.song-search__results{ margin-top:.85rem; }
+.song-search__count{ font-weight:600; margin-bottom:.4rem; }
+
+.song-search__list{ list-style:none; padding:0; margin:0; }
+.song-search__list li{ margin:.35rem 0; }
+.song-search__list a{ text-decoration:none; color:inherit; }
+.song-search__list a:hover{ text-decoration:underline; }
+.song-search__empty{ opacity:.85; }
+
+/* =========================================================
+   MØRK MODUS (papir på nattbord)
+   Merk: krev at du set html[data-theme="dark"] via JS/knapp
+   ========================================================= */
+:root{ color-scheme: light dark; }
+
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --paper-bg:#0f0f12;
+  --paper-text:#f3ecd8;
+}
+html[data-theme="dark"] body{
+  background:var(--paper-bg);
+  color:var(--paper-text);
+}
+html[data-theme="dark"] a{ color:inherit; }
+html[data-theme="dark"] .song-btn{
+  color:inherit;
+  background:transparent;
+  border-color:currentColor;
+}
+html[data-theme="dark"] .song-credits{ opacity:.92; }
+html[data-theme="dark"] .song-search__input{ border-color: currentColor; }
+
+/* Mørk-modus-knapp */
+.dark-toggle{
+  position:fixed !important;
+  top:14px !important;
+  right:14px !important;
+  left:auto !important;
+  bottom:auto !important;
+  z-index:9999 !important;
+
+  display:inline-flex;
+  align-items:center;
+  gap:.55em;
+
+  border:1px solid currentColor;
+  border-radius:999px;
+
+  background:transparent;
+  color:inherit;
+
+  padding:.55em .85em;
+  font:inherit;
+  font-weight:600;
+  cursor:pointer;
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+html[data-theme="dark"] .dark-toggle{ background: rgba(255,255,255,.04); }
+html:not([data-theme="dark"]) .dark-toggle{ background: rgba(0,0,0,.03); }
+.dark-toggle:hover{ opacity:.9; }
+.dark-toggle__icon{ font-size:1.05em; line-height:1; }
+
+/* =========================================================
+   PRINT / PDF – ENKEL OG STABIL (1 kolonne)
+   ========================================================= */
+@media print{
+
+  /* Sideformat */
+  @page{
+    size: A4;
+    margin: 14mm;
+  }
+
+  /* Skjul UI-element */
+  header,
+  footer,
+  nav,
+  .dark-toggle,
+  .song-actions-bottom,
+  .song-toc-jump,
+  .tilbake{
+    display: none !important;
+  }
+
+  /* Reint svart/kvitt */
+  body{
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Fjern unødvendig topp-luft */
+  .wp-site-blocks,
+  main,
+  .entry-content.wp-block-post-content{
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  h1{
+    margin-top: 0 !important;
+  }
+
+  /* Metadata tettare på teksten */
+  .song-meta{
+    margin-bottom: 2mm !important;
+  }
+
+  .song-credits{
+    font-size: 10pt !important;
+    line-height: 1.2 !important;
+    opacity: 1 !important;
+    margin: 0 0 2mm 0 !important;
+  }
+
+  /* Songtekst – maks 12pt */
+  .song-lyrics,
+  .song-lyrics p,
+  .song-lyrics li,
+  .song-lyrics pre{
+    font-size: 12pt !important;
+    line-height: 1.35 !important;
+  }
+
+  /* Fornuftige sideskift */
+  h1, h2, h3{
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  p, li, blockquote, pre{
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Ikkje vis URL etter lenker */
+  a[href]::after{
+    content: "" !important;
+  }
+}
+
+/* =========================================================
+   TIL TOPPEN-KNAPP (framside)
+   ========================================================= */
+.to-top{
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 9998;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.to-top:hover{
+  opacity: .85;
+}
+
+/* Ikkje med på utskrift */
+@media print{
+  .to-top{ display:none !important; }
+}
+
+.song-btn-youtube:hover {
+  opacity: .85;
+}
+
+/* =========================================================
+   SPRÅKFILTER (flag-icons)
+   ========================================================= */
+.song-language-filter{
+  display:flex;
+  gap:.4rem;
+  margin: 0 0 1rem;
+}
+
+.song-language-filter__btn{
+  border:none;
+  border-radius:999px;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+  opacity:.75;
+  padding:.35rem .45rem;
+  line-height:1;
+}
+
+
+.song-language-filter__btn[aria-pressed="true"]{ opacity:1; }
+.song-language-filter__btn:hover{ opacity:1; }
+
+.song-language-filter .fi{
+  width: 1.35em;
+  height: 1em;
+  border-radius: 2px;
+}
+
+/* skjermlesar-tekst */
+.sr-only{
+  position:absolute;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+
+/* =========================================================
+   MERKNAD / NB-MELDING PÅ FRAMSIDA
+   ========================================================= */
+.song-notice{
+  background: #fff3bf;
+  color: #1a1a1a;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  margin: 0 0 1rem;
+  font-size: .85em;
+  line-height: 1.35;
+}
+
+.song-notice::before{
+  content: "NB!";
+  font-weight: 700;
+  margin-right: .4em;
+  font-style: italic;
+}
+
+.song-notice{
+  border-left: 4px solid #f1c40f !important;
+}
+
+@media (orientation: landscape){
+  .song-notice{
+    display: none;
+  }
+}
+
+/* =========================================================
+   TYDELEGARE UTHEVING (bold)
+   ========================================================= */
+strong,
+b{
+  font-weight: 700; /* eller 800 om fonten støttar det */
+}
+

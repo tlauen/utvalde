@@ -1,0 +1,11 @@
+{
+  "innslag": [
+    {
+      "tittel": "Dømeinnslag",
+      "dato": "2026-03-05",
+      "ingress": "Denne teksten ligg i data/utvalde.json og blir rendra statisk.",
+      "brudtekst_html": "<p>Rediger med Tiptap-editoren og lim inn HTML her.</p>",
+      "lenkje": "https://folkedans.net"
+    }
+  ]
+}

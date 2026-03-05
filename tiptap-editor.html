@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="nn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Utvalde editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="stilar/hovud.css" />
+  <style>
+    .editor-wrap { max-width: 72rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+    .panel { border: 1px solid var(--line); background: var(--surface); border-radius: 1rem; padding: 1rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
+    .rad { display: flex; gap: .5rem; flex-wrap: wrap; margin: .6rem 0; align-items: center; }
+    .rad > label { min-width: 6rem; }
+    .felt { width: 100%; border: 1px solid var(--line); border-radius: .7rem; padding: .5rem .65rem; font: inherit; }
+    .knapp { border: 1px solid var(--line); border-radius: .7rem; padding: .38rem .66rem; font: inherit; background: #fff; cursor: pointer; }
+    .editor-host { min-height: 18rem; border: 1px solid var(--line); border-radius: .7rem; background: #fff; padding: .75rem; }
+    .ProseMirror { outline: none; min-height: 16rem; }
+    textarea#output { width: 100%; min-height: 22rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .status { color: var(--muted); min-height: 1.2rem; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <p class="eyebrow">Utvalde</p>
+    <h1>Tiptap-editor</h1>
+    <p class="lede">Bygg eitt JSON-objekt som du limer inn i <code>data/utvalde.json</code>.</p>
+    <p><a class="editor-link" href="index.html">Til nettsida</a></p>
+  </header>
+
+  <main class="editor-wrap">
+    <section class="panel" aria-label="Metadata">
+      <h2>Metadata</h2>
+      <div class="rad">
+        <label for="tittel">Tittel</label>
+        <input id="tittel" class="felt" type="text" placeholder="Tittel" />
+      </div>
+      <div class="rad">
+        <label for="dato">Dato</label>
+        <input id="dato" class="felt" type="date" />
+      </div>
+      <div class="rad">
+        <label for="ingress">Ingress</label>
+        <input id="ingress" class="felt" type="text" placeholder="Kort ingress" />
+      </div>
+      <div class="rad">
+        <label for="lenkje">Lenkje</label>
+        <input id="lenkje" class="felt" type="url" placeholder="https://..." />
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Editor">
+      <h2>Brudtekst</h2>
+      <div class="rad" id="toolbar" role="toolbar" aria-label="Formatering">
+        <button class="knapp" type="button" data-cmd="bold"><strong>Feit</strong></button>
+        <button class="knapp" type="button" data-cmd="italic"><em>Kursiv</em></button>
+        <button class="knapp" type="button" data-cmd="br">Linjeskift</button>
+        <button class="knapp" type="button" data-cmd="clear">Rydd</button>
+      </div>
+      <div id="editor" class="editor-host"></div>
+      <div class="rad">
+        <button class="knapp" id="bygg" type="button">Bygg JSON-objekt</button>
+        <button class="knapp" id="kopier" type="button">Kopier</button>
+      </div>
+      <p class="status" id="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel" aria-label="Output">
+      <h2>Output</h2>
+      <textarea id="output" class="felt" spellcheck="false"></textarea>
+    </section>
+  </main>
+
+  <script type="module">
+    const editorHost = document.getElementById("editor");
+    const toolbar = document.getElementById("toolbar");
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+
+    function setStatus(msg) {
+      status.textContent = msg || "";
+    }
+
+    function esc(s) {
+      return String(s || "")
+        .replaceAll("\\", "\\\\")
+        .replaceAll('"', '\\"')
+        .replaceAll("\n", "\\n");
+    }
+
+    async function importFrom(urls) {
+      let lastError = null;
+      for (const url of urls) {
+        try {
+          return await import(url);
+        } catch (err) {
+          lastError = err;
+        }
+      }
+      throw lastError || new Error("Importfeil");
+    }
+
+    let editor = null;
+    try {
+      const core = await importFrom([
+        "https://cdn.jsdelivr.net/npm/@tiptap/core@2.11.0/+esm",
+        "https://esm.sh/@tiptap/core@2.11.0"
+      ]);
+      const starter = await importFrom([
+        "https://cdn.jsdelivr.net/npm/@tiptap/starter-kit@2.11.0/+esm",
+        "https://esm.sh/@tiptap/starter-kit@2.11.0"
+      ]);
+
+      const { Editor } = core;
+      const StarterKit = starter.default;
+
+      editor = new Editor({
+        element: editorHost,
+        extensions: [StarterKit.configure({
+          codeBlock: false,
+          blockquote: false,
+          horizontalRule: false
+        })],
+        content: "<p></p>"
+      });
+
+      editorHost.addEventListener("mousedown", () => editor.commands.focus());
+      setStatus("Editor klar.");
+    } catch (err) {
+      console.error(err);
+      setStatus("Klarte ikkje laste TipTap. Sjekk console (F12).");
+    }
+
+    function value(id) {
+      return (document.getElementById(id)?.value || "").trim();
+    }
+
+    function buildObject() {
+      if (!editor) {
+        setStatus("Editor er ikkje klar.");
+        return;
+      }
+
+      const obj = {
+        tittel: value("tittel") || "Utan tittel",
+        dato: value("dato"),
+        ingress: value("ingress"),
+        brudtekst_html: editor.getHTML(),
+        lenkje: value("lenkje")
+      };
+
+      const line = `{
+  "tittel": "${esc(obj.tittel)}",
+  "dato": "${esc(obj.dato)}",
+  "ingress": "${esc(obj.ingress)}",
+  "brudtekst_html": "${esc(obj.brudtekst_html)}",
+  "lenkje": "${esc(obj.lenkje)}"
+}`;
+
+      output.value = line;
+      setStatus("JSON-objekt bygd.");
+    }
+
+    toolbar?.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-cmd]");
+      if (!button || !editor) return;
+      event.preventDefault();
+
+      const cmd = button.dataset.cmd;
+      const chain = editor.chain().focus();
+      if (cmd === "bold") chain.toggleBold().run();
+      else if (cmd === "italic") chain.toggleItalic().run();
+      else if (cmd === "br") chain.setHardBreak().run();
+      else if (cmd === "clear") chain.clearNodes().unsetAllMarks().run();
+    });
+
+    document.getElementById("bygg")?.addEventListener("click", buildObject);
+
+    document.getElementById("kopier")?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(output.value || "");
+        setStatus("Kopiert.");
+      } catch {
+        output.focus();
+        output.select();
+        setStatus("Markerte tekst. Bruk Cmd/Ctrl+C.");
+      }
+    });
+  </script>
+</body>
+</html>
