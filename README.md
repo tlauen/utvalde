@@ -1,6 +1,10 @@
 # utvalde
 
-Statisk versjon av den tidlegare WordPress-sida for utvalde songar.
+Statisk versjon av den tidlegare WordPress-sida for utvalde songar (`/utvalde`).
+
+## Kva nettsida er
+
+`utvalde` inneheld framside med songoversikt og eigne songsider, migrert frå WordPress til statisk HTML.
 
 ## Kva som er migrert
 
@@ -11,10 +15,22 @@ Statisk versjon av den tidlegare WordPress-sida for utvalde songar.
 - Songsider med metadata + knappar (Skriv ut / Apple Music / Spotify / YouTube)
 - 83 publiserte songar frå WordPress-eksporten
 
-## Kjelde for migrering
+## Teknologi
 
-- `migration/wordpress/torbjrnsutvalde.WordPress.2026-03-05.xml`
-- `migration/wordpress/sql12_hmg9_webhuset_no.sql`
+- Statisk HTML/CSS/JavaScript
+- Generering frå eksport via Python-skript
+- Ingen runtime-backend
+
+## Viktige mapper/filer
+
+- `index.html`: framside
+- `song/<slug>/index.html`: songsider
+- `data/sok-index.json`: søkeindeks
+- `stilar/hovud.css`: stilark
+- `skript/app.js`: frontend-logikk
+- `skript/import_wordpress.py`: migrerings-/generator-skript
+- `tiptap-editor.html`: editor for nye songar
+- `assets/`: statiske ressursar
 
 ## Regenerer statiske filer
 
@@ -40,3 +56,11 @@ Editoren lagar fire output-felt:
 2. Framside-linje (`<li ...>`) i rett songtype-seksjon i `index.html`
 3. Søkeobjekt til `data/sok-index.json`
 4. Metadata-referanse
+
+## Migreringsdata
+
+Rådata frå WordPress ligg i `migration/` lokalt, men mappa er ignorert i git.
+
+## Lisens
+
+Sjå [LICENSE](LICENSE).
