@@ -29,3 +29,14 @@ python3 -m http.server 8000
 ```
 
 Opne `http://localhost:8000/`.
+
+## Tiptap-editor for nye songar
+
+Opne `tiptap-editor.html` for å lage nytt innhald.
+
+Editoren lagar fire output-felt:
+
+1. Songside (`song/<slug>/index.html`)
+2. Framside-linje (`<li ...>`) i rett songtype-seksjon i `index.html`
+3. Søkeobjekt til `data/sok-index.json`
+4. Metadata-referanse

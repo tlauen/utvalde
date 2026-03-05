@@ -3,30 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Utvalde editor</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Utvalde song-editor</title>
   <link rel="stylesheet" href="stilar/hovud.css" />
   <style>
     .editor-wrap { max-width: 72rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
-    .panel { border: 1px solid var(--line); background: var(--surface); border-radius: 1rem; padding: 1rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
-    .rad { display: flex; gap: .5rem; flex-wrap: wrap; margin: .6rem 0; align-items: center; }
-    .rad > label { min-width: 6rem; }
-    .felt { width: 100%; border: 1px solid var(--line); border-radius: .7rem; padding: .5rem .65rem; font: inherit; }
-    .knapp { border: 1px solid var(--line); border-radius: .7rem; padding: .38rem .66rem; font: inherit; background: #fff; cursor: pointer; }
-    .editor-host { min-height: 18rem; border: 1px solid var(--line); border-radius: .7rem; background: #fff; padding: .75rem; }
+    .panel { border: 1px solid #d4d4d4; border-radius: 12px; background: #fff; padding: 1rem; margin-bottom: 1rem; }
+    .rad { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; margin: .5rem 0; }
+    .rad > label { min-width: 7rem; font-weight: 600; }
+    .felt { width: 100%; border: 1px solid #c7c7c7; border-radius: 10px; padding: .55rem .65rem; font: inherit; }
+    .felt-sm { flex: 1 1 22rem; }
+    .knapp { border: 1px solid #333; border-radius: 999px; background: transparent; color: inherit; font: inherit; padding: .4rem .8rem; cursor: pointer; }
+    .knapp:hover { opacity: .85; }
+    .editor-host { min-height: 18rem; border: 1px solid #c7c7c7; border-radius: 10px; background: #fff; padding: .75rem; }
     .ProseMirror { outline: none; min-height: 16rem; }
-    textarea#output { width: 100%; min-height: 22rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    .status { color: var(--muted); min-height: 1.2rem; }
+    textarea.output { width: 100%; min-height: 14rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .status { min-height: 1.2rem; opacity: .8; }
+    .grid { display: grid; gap: 1rem; }
+    @media (min-width: 980px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .chips { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }
+    .chips label { font-weight: 400; display: inline-flex; gap: .35rem; align-items: center; }
+    h2 { margin-top: 0; }
   </style>
 </head>
 <body>
-  <header class="hero">
-    <p class="eyebrow">Utvalde</p>
-    <h1>Tiptap-editor</h1>
-    <p class="lede">Bygg eitt JSON-objekt som du limer inn i <code>data/utvalde.json</code>.</p>
-    <p><a class="editor-link" href="index.html">Til nettsida</a></p>
+  <header class="wp-site-blocks" style="padding-top:2rem;">
+    <p><a href="index.html">← Til nettsida</a></p>
+    <h1>Tiptap-editor for songar</h1>
+    <p>Bygg metadata og tekst for den statiske songløysinga.</p>
   </header>
 
   <main class="editor-wrap">
@@ -34,24 +37,64 @@
       <h2>Metadata</h2>
       <div class="rad">
         <label for="tittel">Tittel</label>
-        <input id="tittel" class="felt" type="text" placeholder="Tittel" />
+        <input id="tittel" class="felt felt-sm" type="text" placeholder="Fanitullen" />
       </div>
       <div class="rad">
-        <label for="dato">Dato</label>
-        <input id="dato" class="felt" type="date" />
+        <label for="slug">Slug</label>
+        <input id="slug" class="felt felt-sm" type="text" placeholder="fanitullen" />
+        <button class="knapp" type="button" id="lag-slug">Lag frå tittel</button>
       </div>
       <div class="rad">
-        <label for="ingress">Ingress</label>
-        <input id="ingress" class="felt" type="text" placeholder="Kort ingress" />
+        <label for="songtype">Songtype</label>
+        <select id="songtype" class="felt felt-sm">
+          <option value="">Vel songtype</option>
+          <option value="barndomsviser|Barndomsviser">Barndomsviser</option>
+          <option value="drikkevise|Drikkeviser">Drikkeviser</option>
+          <option value="folkevise|Folkeviser">Folkeviser</option>
+          <option value="juleviser|Juleviser">Juleviser</option>
+          <option value="moderne|Moderne viser">Moderne viser</option>
+          <option value="norskdomssongar|Norskdomssongar">Norskdomssongar</option>
+          <option value="sjanti|Sjanti">Sjanti</option>
+          <option value="sorlandsvise|Sørlandsviser">Sørlandsviser</option>
+          <option value="visebolge|Visebølgeviser">Visebølgeviser</option>
+        </select>
       </div>
       <div class="rad">
-        <label for="lenkje">Lenkje</label>
-        <input id="lenkje" class="felt" type="url" placeholder="https://..." />
+        <label>Språk</label>
+        <div class="chips" id="sprak-wrap">
+          <label><input type="checkbox" value="no" checked> Norsk (no)</label>
+          <label><input type="checkbox" value="se"> Svensk (se)</label>
+          <label><input type="checkbox" value="dk"> Dansk (dk)</label>
+          <label><input type="checkbox" value="gb"> Engelsk (gb)</label>
+          <label><input type="checkbox" value="ie"> Irsk (ie)</label>
+          <label><input type="checkbox" value="fi"> Finsk (fi)</label>
+          <label><input type="checkbox" value="de"> Tysk (de)</label>
+        </div>
+      </div>
+      <div class="rad">
+        <label for="tekstforfattar">Tekst</label>
+        <input id="tekstforfattar" class="felt" type="text" placeholder="Tekstforfattar" />
+      </div>
+      <div class="rad">
+        <label for="komponist">Melodi</label>
+        <input id="komponist" class="felt" type="text" placeholder="Komponist / folketone" />
+      </div>
+      <div class="rad">
+        <label for="apple_music">Apple</label>
+        <input id="apple_music" class="felt" type="url" placeholder="https://music.apple.com/..." />
+      </div>
+      <div class="rad">
+        <label for="spotify">Spotify</label>
+        <input id="spotify" class="felt" type="url" placeholder="https://open.spotify.com/..." />
+      </div>
+      <div class="rad">
+        <label for="youtube">YouTube</label>
+        <input id="youtube" class="felt" type="url" placeholder="https://youtube.com/..." />
       </div>
     </section>
 
-    <section class="panel" aria-label="Editor">
-      <h2>Brudtekst</h2>
+    <section class="panel" aria-label="Songtekst">
+      <h2>Songtekst</h2>
       <div class="rad" id="toolbar" role="toolbar" aria-label="Formatering">
         <button class="knapp" type="button" data-cmd="bold"><strong>Feit</strong></button>
         <button class="knapp" type="button" data-cmd="italic"><em>Kursiv</em></button>
@@ -60,33 +103,145 @@
       </div>
       <div id="editor" class="editor-host"></div>
       <div class="rad">
-        <button class="knapp" id="bygg" type="button">Bygg JSON-objekt</button>
-        <button class="knapp" id="kopier" type="button">Kopier</button>
+        <button class="knapp" id="bygg" type="button">Bygg output</button>
       </div>
       <p class="status" id="status" aria-live="polite"></p>
     </section>
 
-    <section class="panel" aria-label="Output">
-      <h2>Output</h2>
-      <textarea id="output" class="felt" spellcheck="false"></textarea>
-    </section>
+    <div class="grid">
+      <section class="panel" aria-label="Songside output">
+        <h2>1) Songside (index.html)</h2>
+        <div class="rad"><button class="knapp" type="button" data-copy="song-output">Kopier</button></div>
+        <textarea id="song-output" class="felt output" spellcheck="false"></textarea>
+      </section>
+
+      <section class="panel" aria-label="Framside output">
+        <h2>2) Framside-linje</h2>
+        <div class="rad"><button class="knapp" type="button" data-copy="toc-output">Kopier</button></div>
+        <textarea id="toc-output" class="felt output" spellcheck="false"></textarea>
+      </section>
+
+      <section class="panel" aria-label="Søk output">
+        <h2>3) Søkeobjekt (sok-index.json)</h2>
+        <div class="rad"><button class="knapp" type="button" data-copy="search-output">Kopier</button></div>
+        <textarea id="search-output" class="felt output" spellcheck="false"></textarea>
+      </section>
+
+      <section class="panel" aria-label="Metadata output">
+        <h2>4) Metadata (referanse)</h2>
+        <div class="rad"><button class="knapp" type="button" data-copy="meta-output">Kopier</button></div>
+        <textarea id="meta-output" class="felt output" spellcheck="false"></textarea>
+      </section>
+    </div>
   </main>
 
   <script type="module">
     const editorHost = document.getElementById("editor");
     const toolbar = document.getElementById("toolbar");
-    const output = document.getElementById("output");
     const status = document.getElementById("status");
+
+    const songOut = document.getElementById("song-output");
+    const tocOut = document.getElementById("toc-output");
+    const searchOut = document.getElementById("search-output");
+    const metaOut = document.getElementById("meta-output");
 
     function setStatus(msg) {
       status.textContent = msg || "";
     }
 
-    function esc(s) {
+    function value(id) {
+      return (document.getElementById(id)?.value || "").trim();
+    }
+
+    function slugify(input) {
+      const raw = String(input || "").trim().toLowerCase()
+        .replace(/æ/g, "ae")
+        .replace(/ø/g, "o")
+        .replace(/å/g, "a")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      return raw
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+
+    function escHtml(s) {
       return String(s || "")
-        .replaceAll("\\", "\\\\")
-        .replaceAll('"', '\\"')
-        .replaceAll("\n", "\\n");
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function escJson(s) {
+      return JSON.stringify(String(s || ""));
+    }
+
+    function stripTags(html) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html || "";
+      return (tmp.textContent || "").replace(/\s+/g, " ").trim();
+    }
+
+    function selectedSprak() {
+      return Array.from(document.querySelectorAll("#sprak-wrap input[type='checkbox']:checked"))
+        .map(el => el.value)
+        .filter(Boolean);
+    }
+
+    function buildSongPage(meta, lyricsHtml) {
+      const credits = [];
+      if (meta.tekstforfattar) credits.push(`<span class="song-credit"><strong>Tekst:</strong> ${escHtml(meta.tekstforfattar)}</span>`);
+      if (meta.komponist) credits.push(`<span class="song-credit"><strong>Melodi:</strong> ${escHtml(meta.komponist)}</span>`);
+
+      const buttons = [
+        `<button type="button" class="song-btn song-btn-small song-btn-print" data-song-print="1" data-title="${escHtml(meta.tittel)}">🖨 Skriv ut</button>`
+      ];
+      if (meta.apple_music) buttons.push(`<a class="song-btn song-btn-small" href="${escHtml(meta.apple_music)}" target="_blank" rel="noopener"> Apple Music</a>`);
+      if (meta.spotify) buttons.push(`<a class="song-btn song-btn-small" href="${escHtml(meta.spotify)}" target="_blank" rel="noopener">Spotify</a>`);
+      if (meta.youtube) buttons.push(`<a class="song-btn song-btn-small song-btn-youtube" href="${escHtml(meta.youtube)}" target="_blank" rel="noopener">YouTube</a>`);
+
+      return `<!doctype html>
+<html lang="nn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escHtml(meta.tittel)} | Torbjørns utvalde songar</title>
+  <link rel="stylesheet" href="../../stilar/hovud.css" />
+</head>
+<body class="single-song">
+  <main class="wp-site-blocks">
+    <article class="entry-content wp-block-post-content">
+      <p class="tilbake"><a href="../../">← Tilbake til framsida</a></p>
+      <p class="song-notice"><em>På små skjermar kan det vere lurt å snu telefonen for å sjå teksten i riktig breidde.</em></p>
+      <h1>${escHtml(meta.tittel)}</h1>
+
+      <div class="song-meta">
+        ${credits.length ? `<div class="song-credits">${credits.join("")}</div>` : ""}
+      </div>
+
+      <div class="song-lyrics">${lyricsHtml}</div>
+
+      <div class="song-actions song-actions-bottom">
+        ${buttons.join("")}
+      </div>
+
+      <p class="tilbake"><a href="../../">← Tilbake til framsida</a></p>
+    </article>
+  </main>
+
+  <button class="dark-toggle" type="button" aria-pressed="false" aria-label="Byt mellom lys og mørk modus">
+    <span class="dark-toggle__icon" aria-hidden="true">☾</span>
+    <span class="dark-toggle__text">Mørk</span>
+  </button>
+
+  <script src="../../skript/app.js"><\/script>
+</body>
+</html>`;
     }
 
     async function importFrom(urls) {
@@ -132,35 +287,10 @@
       setStatus("Klarte ikkje laste TipTap. Sjekk console (F12).");
     }
 
-    function value(id) {
-      return (document.getElementById(id)?.value || "").trim();
-    }
-
-    function buildObject() {
-      if (!editor) {
-        setStatus("Editor er ikkje klar.");
-        return;
-      }
-
-      const obj = {
-        tittel: value("tittel") || "Utan tittel",
-        dato: value("dato"),
-        ingress: value("ingress"),
-        brudtekst_html: editor.getHTML(),
-        lenkje: value("lenkje")
-      };
-
-      const line = `{
-  "tittel": "${esc(obj.tittel)}",
-  "dato": "${esc(obj.dato)}",
-  "ingress": "${esc(obj.ingress)}",
-  "brudtekst_html": "${esc(obj.brudtekst_html)}",
-  "lenkje": "${esc(obj.lenkje)}"
-}`;
-
-      output.value = line;
-      setStatus("JSON-objekt bygd.");
-    }
+    document.getElementById("lag-slug")?.addEventListener("click", () => {
+      const tittel = value("tittel");
+      document.getElementById("slug").value = slugify(tittel);
+    });
 
     toolbar?.addEventListener("click", (event) => {
       const button = event.target.closest("button[data-cmd]");
@@ -175,15 +305,78 @@
       else if (cmd === "clear") chain.clearNodes().unsetAllMarks().run();
     });
 
-    document.getElementById("bygg")?.addEventListener("click", buildObject);
+    document.getElementById("bygg")?.addEventListener("click", () => {
+      if (!editor) {
+        setStatus("Editor er ikkje klar.");
+        return;
+      }
 
-    document.getElementById("kopier")?.addEventListener("click", async () => {
+      const tittel = value("tittel") || "Utan tittel";
+      const slugInput = value("slug");
+      const slug = slugInput || slugify(tittel);
+      if (!slugInput) document.getElementById("slug").value = slug;
+
+      const sprak = selectedSprak();
+      const songtypeRaw = value("songtype");
+      const [songtypeSlug, songtypeLabel] = songtypeRaw.includes("|") ? songtypeRaw.split("|", 2) : ["", ""];
+
+      const meta = {
+        tittel,
+        slug,
+        songtype_slug: songtypeSlug,
+        songtype_label: songtypeLabel,
+        sprak,
+        tekstforfattar: value("tekstforfattar"),
+        komponist: value("komponist"),
+        apple_music: value("apple_music"),
+        spotify: value("spotify"),
+        youtube: value("youtube")
+      };
+
+      const lyricsHtml = editor.getHTML();
+      const plain = [meta.tittel, meta.tekstforfattar, meta.komponist, stripTags(lyricsHtml)]
+        .filter(Boolean)
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      songOut.value = buildSongPage(meta, lyricsHtml);
+      tocOut.value = `<li data-sprak="${escHtml(meta.sprak.join(" "))}"><a href="song/${escHtml(meta.slug)}/">${escHtml(meta.tittel)}</a></li>`;
+      searchOut.value = `{
+  "title": ${escJson(meta.tittel)},
+  "link": ${escJson(`song/${meta.slug}/`)},
+  "text": ${escJson(plain)}
+}`;
+      metaOut.value = `{
+  "title": ${escJson(meta.tittel)},
+  "slug": ${escJson(meta.slug)},
+  "songtype_slug": ${escJson(meta.songtype_slug)},
+  "songtype_label": ${escJson(meta.songtype_label)},
+  "sprak": ${JSON.stringify(meta.sprak)},
+  "tekstforfattar": ${escJson(meta.tekstforfattar)},
+  "komponist": ${escJson(meta.komponist)},
+  "apple_music": ${escJson(meta.apple_music)},
+  "spotify": ${escJson(meta.spotify)},
+  "youtube": ${escJson(meta.youtube)}
+}`;
+
+      setStatus("Output bygd: songside + framside-linje + søkeobjekt.");
+    });
+
+    document.addEventListener("click", async (event) => {
+      const btn = event.target.closest("button[data-copy]");
+      if (!btn) return;
+
+      const id = btn.getAttribute("data-copy");
+      const target = document.getElementById(id);
+      if (!target) return;
+
       try {
-        await navigator.clipboard.writeText(output.value || "");
+        await navigator.clipboard.writeText(target.value || "");
         setStatus("Kopiert.");
       } catch {
-        output.focus();
-        output.select();
+        target.focus();
+        target.select();
         setStatus("Markerte tekst. Bruk Cmd/Ctrl+C.");
       }
     });
